@@ -1,11 +1,16 @@
 using MazeRL.Core;
 
-// Default: a fixed 10x10 maze. Pass "--random [rows] [cols]" to generate one instead.
+// Default: a fixed 10x10 maze with the tabular Q-learning agent.
+// Flags: --dqn          train the neural-network agent instead
+//        --random [r c] generate a random maze
+var useDqn = args.Contains("--dqn");
+var positional = args.Where(a => a != "--dqn").ToArray();
+
 Maze maze;
-if (args.Length > 0 && args[0] == "--random")
+if (positional.Length > 0 && positional[0] == "--random")
 {
-    var rows = args.Length > 1 ? int.Parse(args[1]) : 15;
-    var cols = args.Length > 2 ? int.Parse(args[2]) : rows;
+    var rows = positional.Length > 1 ? int.Parse(positional[1]) : 15;
+    var cols = positional.Length > 2 ? int.Parse(positional[2]) : rows;
     maze = MazeGenerator.Generate(rows, cols);
 }
 else
@@ -24,10 +29,14 @@ else
 }
 
 var env = new MazeEnvironment(maze);
-var agent = new QLearningAgent(env.StateCount, env.ActionCount, seed: 42);
+IAgent agent = useDqn
+    ? new DqnAgent(env.StateCount, env.ActionCount, seed: 42)
+    : new QLearningAgent(env.StateCount, env.ActionCount, seed: 42);
 var trainer = new Trainer(env, agent);
 
-Console.WriteLine("=== MazeRL: tabular Q-learning from scratch ===");
+Console.WriteLine(useDqn
+    ? "=== MazeRL: DQN — a neural network learning the maze ==="
+    : "=== MazeRL: tabular Q-learning from scratch ===");
 Console.WriteLine();
 Console.WriteLine("The maze:");
 PrintMaze(maze);
@@ -41,11 +50,14 @@ for (var i = 1; i < checkpoints.Length; i++)
 
     var (path, steps, reachedGoal) = trainer.TestRun();
     var status = reachedGoal ? $"solves it in {steps} steps" : "cannot solve it yet";
-    Console.WriteLine($"After {checkpoints[i],5} episodes (epsilon {agent.Epsilon:F3}): greedy policy {status}");
+    var loss = agent is DqnAgent d ? $", loss {d.AverageLoss:F3}" : "";
+    Console.WriteLine($"After {checkpoints[i],5} episodes (epsilon {agent.Epsilon:F3}{loss}): greedy policy {status}");
 }
 
 Console.WriteLine();
-Console.WriteLine("Learned policy (arrows = best action per cell, from the Q-table):");
+Console.WriteLine(useDqn
+    ? "Learned policy (arrows = best action per cell, from the network):"
+    : "Learned policy (arrows = best action per cell, from the Q-table):");
 PrintPolicy(maze, env, agent);
 Console.WriteLine();
 
@@ -64,7 +76,9 @@ File.WriteAllText(brainPath, agent.ToJson());
 Console.WriteLine($"Brain saved to: {brainPath}");
 
 // Prove the save/load round-trip: a fresh agent loaded from JSON is instantly smart.
-var loaded = QLearningAgent.FromJson(File.ReadAllText(brainPath), seed: 42);
+IAgent loaded = useDqn
+    ? DqnAgent.FromJson(File.ReadAllText(brainPath), seed: 42)
+    : QLearningAgent.FromJson(File.ReadAllText(brainPath), seed: 42);
 var trainer2 = new Trainer(env, loaded);
 var (_, loadedSteps, loadedSolved) = trainer2.TestRun();
 Console.WriteLine($"Reloaded brain from JSON: {(loadedSolved ? "reached goal" : "FAILED")} in {loadedSteps} steps — no retraining needed.");
@@ -83,7 +97,7 @@ static void PrintMaze(Maze maze)
     }
 }
 
-static void PrintPolicy(Maze maze, MazeEnvironment env, QLearningAgent agent)
+static void PrintPolicy(Maze maze, MazeEnvironment env, IAgent agent)
 {
     var arrows = new[] { '^', 'v', '<', '>' };
     for (var r = 0; r < maze.Rows; r++)
@@ -101,7 +115,7 @@ static void PrintPolicy(Maze maze, MazeEnvironment env, QLearningAgent agent)
     }
 }
 
-static void PrintHeatmap(Maze maze, MazeEnvironment env, QLearningAgent agent)
+static void PrintHeatmap(Maze maze, MazeEnvironment env, IAgent agent)
 {
     // Normalize best Q-values to 0-9 so the gradient toward the goal is visible.
     var max = double.MinValue;

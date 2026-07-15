@@ -18,7 +18,7 @@ public class MazeBoard : Control
 {
     public Maze? Maze { get; set; }
     public MazeEnvironment? Env { get; set; }
-    public QLearningAgent? Agent { get; set; }
+    public IAgent? Agent { get; set; }
 
     public bool ShowHeatmap { get; set; } = true;
     public bool ShowArrows { get; set; } = true;
@@ -97,7 +97,7 @@ public class MazeBoard : Control
                 else
                 {
                     var best = Agent.BestValue(state);
-                    if (!ShowHeatmap || best == 0 || range <= 0)
+                    if (!ShowHeatmap || !Agent.HasLearned || best == 0 || range <= 0)
                         fill = UnvisitedColor;
                     else
                         fill = Lerp(ColdColor, HotColor, (best - min) / range);
@@ -116,7 +116,7 @@ public class MazeBoard : Control
                     DrawLabel(ctx, "S", rect, size);
                 }
 
-                if (!isWall && ShowArrows && Agent.BestValue(state) != 0)
+                if (!isWall && ShowArrows && Agent.HasLearned && Agent.BestValue(state) != 0)
                     DrawArrow(ctx, Agent.BestAction(state), rect);
 
                 if (!isWall && PathCells is not null && PathCells.Contains(state))

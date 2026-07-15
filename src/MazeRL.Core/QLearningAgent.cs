@@ -8,7 +8,7 @@ namespace MazeRL.Core;
 /// reward of taking that action from that state. Learning = nudging those
 /// numbers toward reality after every single step.
 /// </summary>
-public class QLearningAgent
+public class QLearningAgent : IAgent
 {
     /// <summary>Q[state, action] — the brain. Starts at all zeros: total ignorance.</summary>
     public double[,] Q { get; private set; }
@@ -24,6 +24,8 @@ public class QLearningAgent
 
     /// <summary>Exploration rate ε: probability of trying a random action instead of the best-known one.</summary>
     public double Epsilon { get; set; } = 1.0;
+
+    public bool HasLearned { get; private set; }
 
     private readonly Random _random;
 
@@ -65,6 +67,14 @@ public class QLearningAgent
         return best;
     }
 
+    public double[] QValues(int state)
+    {
+        var values = new double[ActionCount];
+        for (var a = 0; a < ActionCount; a++)
+            values[a] = Q[state, a];
+        return values;
+    }
+
     /// <summary>
     /// The Q-learning update — the one line of math the whole project exists to teach:
     ///   Q(s,a) += α · (r + γ·max_a' Q(s',a') − Q(s,a))
@@ -76,9 +86,14 @@ public class QLearningAgent
         var futureValue = done ? 0.0 : BestValue(nextState);
         var target = reward + DiscountFactor * futureValue;
         Q[state, action] += LearningRate * (target - Q[state, action]);
+        HasLearned = true;
     }
 
-    public void ResetKnowledge() => Q = new double[StateCount, ActionCount];
+    public void ResetKnowledge()
+    {
+        Q = new double[StateCount, ActionCount];
+        HasLearned = false;
+    }
 
     /// <summary>
     /// Serialize the brain to JSON. Open the file: the learning is literally just numbers.
@@ -113,6 +128,7 @@ public class QLearningAgent
             LearningRate = dto.LearningRate,
             DiscountFactor = dto.DiscountFactor,
             Epsilon = dto.Epsilon,
+            HasLearned = true, // a saved brain is a trained brain
         };
         for (var s = 0; s < dto.StateCount; s++)
             for (var a = 0; a < dto.ActionCount; a++)

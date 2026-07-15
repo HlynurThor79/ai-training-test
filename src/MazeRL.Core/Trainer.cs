@@ -10,7 +10,7 @@ public readonly record struct EpisodeResult(int Episode, int Steps, double Total
 public class Trainer
 {
     public IEnvironment Environment { get; }
-    public QLearningAgent Agent { get; }
+    public IAgent Agent { get; }
 
     /// <summary>Safety valve: end an episode after this many steps even without reaching the goal.</summary>
     public int MaxStepsPerEpisode { get; set; } = 1000;
@@ -25,7 +25,7 @@ public class Trainer
 
     public event Action<EpisodeResult>? EpisodeFinished;
 
-    public Trainer(IEnvironment environment, QLearningAgent agent)
+    public Trainer(IEnvironment environment, IAgent agent)
     {
         Environment = environment;
         Agent = agent;

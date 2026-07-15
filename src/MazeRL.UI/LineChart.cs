@@ -15,6 +15,9 @@ public class LineChart : Control
 
     public int MaxPoints { get; set; } = 300;
 
+    /// <summary>Number format for the min/max/last label ("0" for steps, "0.###" for loss).</summary>
+    public string LabelFormat { get; set; } = "0";
+
     public void AddPoints(IEnumerable<double> values)
     {
         _values.AddRange(values);
@@ -52,7 +55,9 @@ public class LineChart : Control
             ctx.DrawLine(pen, PointAt(i - 1), PointAt(i));
 
         var label = new FormattedText(
-            $"min {min:0}  max {max:0}  last {_values[^1]:0}",
+            $"min {min.ToString(LabelFormat, CultureInfo.InvariantCulture)}  " +
+            $"max {max.ToString(LabelFormat, CultureInfo.InvariantCulture)}  " +
+            $"last {_values[^1].ToString(LabelFormat, CultureInfo.InvariantCulture)}",
             CultureInfo.InvariantCulture, FlowDirection.LeftToRight,
             Typeface.Default, 11, Brushes.Gray);
         ctx.DrawText(label, new Point(6, 4));
