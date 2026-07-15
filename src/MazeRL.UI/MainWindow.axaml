@@ -1,0 +1,67 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:MazeRL.UI"
+        x:Class="MazeRL.UI.MainWindow"
+        Title="MazeRL — Q-learning playground"
+        Width="1150" Height="780">
+  <DockPanel>
+    <ScrollViewer DockPanel.Dock="Right" Width="330">
+      <StackPanel Margin="14" Spacing="10">
+
+        <TextBlock Text="Training" FontWeight="Bold" FontSize="16"/>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button x:Name="StartPauseButton" Content="▶ Start training" Click="OnStartPause"/>
+          <Button Content="Test run" Click="OnTestRun"/>
+        </StackPanel>
+        <TextBlock x:Name="SpeedLabel" Text="Speed: 20 episodes per tick"/>
+        <Slider x:Name="SpeedSlider" Minimum="1" Maximum="500" Value="20"/>
+        <TextBlock x:Name="StatsLabel" Text="Episodes: 0" FontFamily="Consolas,monospace" FontSize="12"/>
+        <local:LineChart x:Name="StepsChart" Height="120"/>
+        <TextBlock Text="steps per episode (last 300)" FontSize="11" Foreground="Gray"/>
+        <Button Content="Reset brain (forget everything)" Click="OnResetBrain"/>
+
+        <Separator/>
+        <TextBlock Text="View" FontWeight="Bold" FontSize="16"/>
+        <CheckBox x:Name="HeatmapCheck" Content="Q-value heatmap" IsChecked="True"/>
+        <CheckBox x:Name="ArrowsCheck" Content="Policy arrows" IsChecked="True"/>
+        <Border Background="#22222A" CornerRadius="4" Padding="8">
+          <TextBlock x:Name="InspectorLabel" Text="Click a cell to inspect its Q-values."
+                     TextWrapping="Wrap" FontFamily="Consolas,monospace" FontSize="12"/>
+        </Border>
+
+        <Separator/>
+        <TextBlock Text="Maze editor" FontWeight="Bold" FontSize="16"/>
+        <RadioButton x:Name="ModeWalls" Content="Draw / erase walls (drag)" IsChecked="True"/>
+        <RadioButton x:Name="ModeStart" Content="Place start"/>
+        <RadioButton x:Name="ModeGoal" Content="Place goal"/>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock Text="Rows" VerticalAlignment="Center"/>
+          <NumericUpDown x:Name="RowsUpDown" Minimum="3" Maximum="40" Value="10" Increment="1" FormatString="0" Width="110"/>
+          <TextBlock Text="Cols" VerticalAlignment="Center"/>
+          <NumericUpDown x:Name="ColsUpDown" Minimum="3" Maximum="40" Value="10" Increment="1" FormatString="0" Width="110"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Content="New empty maze" Click="OnNewMaze"/>
+          <Button Content="Clear walls" Click="OnClearWalls"/>
+        </StackPanel>
+
+        <Separator/>
+        <TextBlock Text="Save / load" FontWeight="Bold" FontSize="16"/>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Content="Save maze…" Click="OnSaveMaze"/>
+          <Button Content="Load maze…" Click="OnLoadMaze"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Content="Save brain…" Click="OnSaveBrain"/>
+          <Button Content="Load brain…" Click="OnLoadBrain"/>
+        </StackPanel>
+        <TextBlock Text="The brain file is just the Q-table as JSON — open it in a text editor."
+                   TextWrapping="Wrap" FontSize="11" Foreground="Gray"/>
+      </StackPanel>
+    </ScrollViewer>
+
+    <Border Background="#1B1B22" Padding="8">
+      <local:MazeBoard x:Name="Board"/>
+    </Border>
+  </DockPanel>
+</Window>
