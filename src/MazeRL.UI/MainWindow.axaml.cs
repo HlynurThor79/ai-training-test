@@ -180,14 +180,18 @@ public partial class MainWindow : Window
 
     // ---- Maze editing ----
 
-    private void OnNewMaze(object? sender, RoutedEventArgs e)
+    private void OnNewMaze(object? sender, RoutedEventArgs e) =>
+        ReplaceMaze(new Maze((int)(RowsUpDown.Value ?? 10), (int)(ColsUpDown.Value ?? 10)));
+
+    private void OnRandomMaze(object? sender, RoutedEventArgs e) =>
+        ReplaceMaze(MazeGenerator.Generate((int)(RowsUpDown.Value ?? 10), (int)(ColsUpDown.Value ?? 10)));
+
+    private void ReplaceMaze(Maze maze)
     {
         _trainTimer.Stop();
         StartPauseButton.Content = "▶ Start training";
         StopBallAnimation();
-        var rows = (int)(RowsUpDown.Value ?? 10);
-        var cols = (int)(ColsUpDown.Value ?? 10);
-        SetupWorld(new Maze(rows, cols));
+        SetupWorld(maze);
     }
 
     private void OnClearWalls(object? sender, RoutedEventArgs e)

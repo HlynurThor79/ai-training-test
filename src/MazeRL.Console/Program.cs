@@ -1,17 +1,27 @@
 using MazeRL.Core;
 
-// A 10x10 maze: '#' wall, '.' open, 'S' start, 'G' goal.
-var maze = Maze.FromText(
-    "S...#.....",
-    ".##.#.###.",
-    ".#..#...#.",
-    ".#.###.##.",
-    ".#.....#..",
-    ".#####.#.#",
-    ".....#.#..",
-    "####.#.#.#",
-    "...#...#.#",
-    ".#...#...G");
+// Default: a fixed 10x10 maze. Pass "--random [rows] [cols]" to generate one instead.
+Maze maze;
+if (args.Length > 0 && args[0] == "--random")
+{
+    var rows = args.Length > 1 ? int.Parse(args[1]) : 15;
+    var cols = args.Length > 2 ? int.Parse(args[2]) : rows;
+    maze = MazeGenerator.Generate(rows, cols);
+}
+else
+{
+    maze = Maze.FromText(
+        "S...#.....",
+        ".##.#.###.",
+        ".#..#...#.",
+        ".#.###.##.",
+        ".#.....#..",
+        ".#####.#.#",
+        ".....#.#..",
+        "####.#.#.#",
+        "...#...#.#",
+        ".#...#...G");
+}
 
 var env = new MazeEnvironment(maze);
 var agent = new QLearningAgent(env.StateCount, env.ActionCount, seed: 42);
