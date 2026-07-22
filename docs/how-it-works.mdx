@@ -1,0 +1,47 @@
+---
+title: "How the learning works"
+description: "Q-learning, the DQN, and the reward signal that teaches everything."
+---
+
+## The Q-table
+
+The agent's entire intelligence is a **Q-table**: for every cell in the maze and
+every action (up/down/left/right), one number estimating "how much total reward
+will I get if I do this here?" It starts at all zeros — total ignorance.
+
+After *every single step* the table is nudged toward reality with the Q-learning
+update:
+
+```
+Q(s,a) += α · (reward + γ · max Q(s',a') − Q(s,a))
+```
+
+## The DQN
+
+The DQN agent does the same job as the Q-table, but the table is replaced by a
+small fully-connected network (one-hot cell → 16 → 16 → 4 Q-values) written from
+scratch: ReLU hidden layers, backpropagation, Adam. Same update target —
+`r + γ · max Q(s′)` — but learned by gradient descent instead of a table nudge,
+with the two classic DQN stabilizers:
+
+- **Experience replay** — transitions go into a memory buffer and training samples
+  random batches, so the net isn't fed correlated consecutive steps
+- **Target network** — a frozen copy computes the learning targets and re-syncs
+  only every 250 gradient steps, so the net isn't chasing its own moving output
+
+## Rewards — the only teaching signal
+
+| Event | Reward |
+| --- | --- |
+| Normal step | −1 (encourages short paths) |
+| Bumping a wall | −5 |
+| Reaching the goal | +100 |
+
+Nobody tells the agent where the goal is or what walls are. It infers everything
+from these numbers.
+
+<Tip>
+`IEnvironment` is deliberately generic — a slippery-floor maze, a maze with a
+patrolling monster, or any other world can be dropped in without touching the
+agent.
+</Tip>

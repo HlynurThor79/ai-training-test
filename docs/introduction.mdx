@@ -1,0 +1,33 @@
+---
+title: "Introduction"
+description: "Reinforcement learning from scratch in C# — no ML libraries."
+---
+
+**MazeRL** is a ball that learns to solve a maze using reinforcement learning,
+written from the ground up with no machine-learning libraries. It ships two
+interchangeable "brains":
+
+<CardGroup cols={2}>
+  <Card title="Tabular Q-learning" icon="table-cells">
+    A plain lookup table — one number per cell per action.
+  </Card>
+  <Card title="DQN" icon="network-wired">
+    A tiny hand-written neural network trained by backpropagation.
+  </Card>
+</CardGroup>
+
+The goal is not raw performance — it's to make it obvious how an AI agent
+*actually* learns. You can watch the Q-values spread backwards from the goal,
+see the policy arrows organize into a path, and (in DQN mode) watch the network
+fire neuron by neuron as the ball walks.
+
+## Project layout
+
+| Path | What it holds |
+| --- | --- |
+| `src/MazeRL.Core` | The engine — maze, environment, agents, neural net, trainer |
+| `src/MazeRL.Console` | Terminal demo that prints the learning story |
+| `src/MazeRL.UI` | Avalonia GUI playground with live visualizations |
+
+Head to the [Quickstart](/docs/quickstart) to run it, or
+[How the learning works](/docs/how-it-works) for the theory.

@@ -1,0 +1,41 @@
+---
+title: "Quickstart"
+description: "Train the agent from the terminal or the GUI."
+---
+
+## Console demo
+
+Trains the agent and prints the learning story to the terminal:
+
+```bash
+dotnet run --project src/MazeRL.Console          # tabular Q-learning
+dotnet run --project src/MazeRL.Console -- --dqn # neural-network (DQN) agent
+```
+
+You'll watch the agent go from random wandering to solving the maze optimally,
+then see its learned policy (arrows), a Q-value heatmap, and the final path. The
+trained "brain" is saved to `brain.json` — open it and see that the learning is
+literally just numbers.
+
+## GUI playground
+
+Avalonia app — runs on Linux/WSLg and Windows:
+
+```bash
+dotnet run --project src/MazeRL.UI
+```
+
+- **Pick a brain** — switch between the Q-table and the neural net (DQN)
+- **Watch it learn** — the Q-value heatmap spreads backwards from the goal while
+  policy arrows organize into a path; speed slider goes 1–500 episodes per tick
+- **Watch the network train** (DQN) — the bottom panel shows the net live:
+  one-hot input, glowing hidden nodes, edges colored by weight sign and sized by
+  magnitude, the four Q-value outputs, and a falling loss curve
+- **Test run** — pauses training and animates the ball following the greedy policy
+- **Draw mazes** — drag to paint/erase walls, place start and goal
+- **Inspect the brain** — click any cell to see its four raw Q-values
+- **Experiment** — wall off the learned path mid-training and watch it adapt
+
+<Note>
+On WSL, Avalonia needs two X11 libraries: `sudo apt install libice6 libsm6`.
+</Note>

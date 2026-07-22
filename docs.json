@@ -1,0 +1,28 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "MazeRL",
+  "description": "Reinforcement learning from scratch in C# — a ball learns to solve a maze.",
+  "colors": {
+    "primary": "#16A34A",
+    "light": "#4ADE80",
+    "dark": "#15803D"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting started",
+        "pages": ["docs/introduction", "docs/quickstart"]
+      },
+      {
+        "group": "Concepts",
+        "pages": ["docs/how-it-works"]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/HlynurThor79/ai-training-test"
+    }
+  }
+}
