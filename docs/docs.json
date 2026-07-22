@@ -12,11 +12,11 @@
     "groups": [
       {
         "group": "Getting started",
-        "pages": ["docs/introduction", "docs/quickstart"]
+        "pages": ["introduction", "quickstart"]
       },
       {
         "group": "Concepts",
-        "pages": ["docs/how-it-works"]
+        "pages": ["how-it-works"]
       }
     ]
   },
